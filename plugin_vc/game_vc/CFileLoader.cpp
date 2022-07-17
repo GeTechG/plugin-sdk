@@ -5,3 +5,7 @@
     Do not delete this comment block. Respect others' work!
 */
 #include "CFileLoader.h"
+
+RpClump* CFileLoader::LoadAtomicFile2Return(const char* file) {
+    return plugin::CallAndReturn<RpClump*, 0x48D7C0, const char*>(file);
+}

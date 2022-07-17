@@ -77,7 +77,10 @@ public:
 
         unsigned char bDistanceFade : 1; //!< fade entity because it is far away
         unsigned char bFlag34 : 1;
-    } m_nEntityFlags;
+    } m_nFlags;
+private:
+    char _pad56[2];
+public:
     unsigned short m_nScanCode;
     unsigned short m_nRandomSeed;
     short m_nModelIndex;

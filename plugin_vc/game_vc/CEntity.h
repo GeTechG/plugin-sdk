@@ -12,6 +12,17 @@
 #include "RenderWare.h"
 #include "CColModel.h"
 
+enum PLUGIN_API eEntityType {
+    ENTITY_TYPE_NOTHING = 0,
+    ENTITY_TYPE_BUILDING = 1,
+    ENTITY_TYPE_VEHICLE = 2,
+    ENTITY_TYPE_PED = 3,
+    ENTITY_TYPE_OBJECT = 4,
+    ENTITY_TYPE_DUMMY = 5,
+    ENTITY_TYPE_NOTINPOOLS = 6,
+    ENTITY_TYPE_7 = 7
+};
+
 class CEntity {
 public:
     CPlaceable m_placement;
@@ -39,7 +50,7 @@ public:
         unsigned char bIsVisible : 1;
         unsigned char bHasCollided : 1;
         unsigned char bRenderScorched : 1;
-        unsigned char bEntUFlag14 : 1;
+        unsigned char bHasBlip : 1;
         unsigned char bUseLevelSectors : 1;
         unsigned char bIsBigBuilding : 1;
 
@@ -54,7 +65,7 @@ public:
 
         unsigned char bEntUFlag25 : 1;
         unsigned char bImBeingRendered : 1;
-        unsigned char bEntUFlag27 : 1;
+        unsigned char bIsTouchingWater : 1;
         unsigned char bEntUFlag28 : 1;
         unsigned char bEntUFlag29 : 1;
         unsigned char bEntUFlag30 : 1;
@@ -77,7 +88,7 @@ public:
     short m_nRandomSeed;
     short m_nModelIndex;
     char m_nLevel;
-    unsigned char m_nInterior;
+    unsigned char m_nAreaCode;
     class CReference *m_pFirstRef;
 
 protected:
