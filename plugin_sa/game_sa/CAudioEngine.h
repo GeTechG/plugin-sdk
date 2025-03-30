@@ -13,6 +13,7 @@
 #include "CAEScriptAudioEntity.h"
 #include "CAECollisionAudioEntity.h"
 #include "CAEVehicleAudioEntity.h"
+#include "eAudioEvents.h"
 
 class PLUGIN_API CAudioEngine {
 public:
@@ -46,8 +47,10 @@ public:
     void SetRadioAutoRetuneOnOff(bool on);
     void RetuneRadio(char stationId);
     CReference* ReportFrontendAudioEvent(int id, float volume, float speed);
+    void ReportMissionAudioEvent(eAudioEvents audioEvent, CVector const* coords);
     void Service();
     void ServiceLoadingTune(float fade);
+    void StartRadio(int radioStation, char arg);
     void StopRadio(tVehicleAudioSettings* settings, bool arg);
     bool IsRadioRetuneInProgress();
     bool IsLoadingTuneActive();
@@ -57,6 +60,8 @@ public:
     char GetCurrentRadioStationID();
     bool IsVehicleRadioActive();
     void InitialisePostLoading();
+    void SetMusicFaderScalingFactor(float value);
+    void SetEffectsFaderScalingFactor(float value);
 };
 
 VALIDATE_SIZE(CAudioEngine, 0x1FD8);

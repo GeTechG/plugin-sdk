@@ -103,8 +103,8 @@ void CPed::FlagToDestroyWhenNextProcessed() {
 int addrof(CPed::ProcessEntityCollision) = ADDRESS_BY_VERSION(0x4CBB30, 0x4CBBD0, 0x4CBB60);
 int gaddrof(CPed::ProcessEntityCollision) = GLOBAL_ADDRESS_BY_VERSION(0x4CBB30, 0x4CBBD0, 0x4CBB60);
 
-void CPed::ProcessEntityCollision(CEntity *entity, CColPoint *colPoint) {
-    plugin::CallVirtualMethod<17, CPed *, CEntity *, CColPoint *>(this, entity, colPoint);
+int CPed::ProcessEntityCollision(CEntity *entity, CColPoint *colPoint) {
+    return plugin::CallVirtualMethodAndReturn<int, 17, CPed *, CEntity *, CColPoint *>(this, entity, colPoint);
 }
 
 int addrof(CPed::SetMoveAnim) = ADDRESS_BY_VERSION(0x4C5A40, 0x4C5AE0, 0x4C5A70);
@@ -1568,6 +1568,10 @@ int gaddrof(CPed::WorkOutHeadingForMovingFirstPerson) = GLOBAL_ADDRESS_BY_VERSIO
 
 float CPed::WorkOutHeadingForMovingFirstPerson(float offset) {
     return plugin::CallMethodAndReturnDynGlobal<float, CPed *, float>(gaddrof(CPed::WorkOutHeadingForMovingFirstPerson), this, offset);
+}
+
+bool CPed::IsPedDoingDriveByShooting() {
+    return plugin::CallMethodAndReturnDynGlobal<bool, CPed*>(0x564BB0, this);
 }
 
 int addrof(CPed::FinishDieAnimCB) = ADDRESS_BY_VERSION(0x4D3950, 0x4D39F0, 0x4D3980);

@@ -5,7 +5,6 @@
     Do not delete this comment block. Respect others' work!
 */
 #pragma once
-
 #include "PluginBase.h"
 #include "CSprite2d.h"
 #include "CPlayerSkin.h"
@@ -15,6 +14,10 @@ enum eMenuPageAlignment {
     MENU_ALIGN_CENTER = 1,
     MENU_ALIGN_LEFT = 2,
     MENU_ALIGN_RIGHT
+};
+
+enum {
+    NUM_ENTRIES = 12
 };
 
 enum eMenuScreen {
@@ -41,7 +44,7 @@ enum eMenuScreen {
     MENUPAGE_SAVE_CUSTOM_WARNING = 19,
     MENUPAGE_SAVE_CHEAT_WARNING = 20,
     MENUPAGE_SKIN_SELECT = 21,
-    MENUPAGE_SAVE_UNUSED = 22,
+    MENUPAGE_SAVE = 22,
     MENUPAGE_SAVE_FAILED = 23,
     MENUPAGE_SAVE_FAILED_2 = 24,
     MENUPAGE_LOAD_FAILED = 25,
@@ -50,9 +53,10 @@ enum eMenuScreen {
     MENUPAGE_EXIT = 28,
     MENUPAGE_START_MENU = 29,
     MENUPAGE_KEYBOARD_CONTROLS = 30,
-    MENUPAGE_MOUSE_CONTROLS = 31,
+    MENUPAGE_MOUSE_SETTINGS = 31,
     MENUPAGE_PAUSE_MENU = 32,
     MENUPAGE_34 = 33,
+    NUM_MENU_PAGES,
 };
 
 enum eMenuAction {
@@ -134,86 +138,98 @@ enum eMenuSprites {
     MENUSPRITE_ESPANTOSO,
     MENUSPRITE_EMOTION,
     MENUSPRITE_WAVE,
-    MENUSPRITE_MP3,
+    MENUSPRITE_MP3LOGO,
     MENUSPRITE_DOWNOFF,
     MENUSPRITE_DOWNON,
     MENUSPRITE_UPOFF,
     MENUSPRITE_UPON,
 };
 
+class PLUGIN_API CMenuPoly {
+public:
+    float x1;
+    float y1;
+    float x2;
+    float y2;
+    float x3;
+    float y3;
+    float x4;
+    float y4;
+};
+
 struct PLUGIN_API CMenuScreen {
     char m_ScreenName[8];
-    unsigned char m_nPreviousPage;
-    unsigned char m_nParentEntry;
+    char m_nPreviousPage;
+    char m_nParentEntry;
 
     struct CMenuEntry {
-        unsigned short m_Action;
+        unsigned short m_nAction;
         char m_EntryName[8];
         unsigned char m_nSaveSlot;
-        unsigned char m_nTargetMenu;
+        char m_nTargetMenu;
         unsigned short m_nX;
         unsigned short m_nY;
         unsigned short m_nAlign;
-    } m_aEntries[12];
+    } m_aEntries[NUM_ENTRIES];
 };
 
 class CMenuManager {
 public:
-    char m_nStatsScrollUp;
+    char m_nStatsScrollDir;
     char field_1[3];
     float m_fStatsScrollSpeed;
     char field_8;
-    bool m_bVibration;
-    bool m_bHudOn;
+    bool m_bPrefsUseVibration;
+    bool m_bPrefsShowHud;
     char field_B;
-    int m_nRadarMode;
-    char field_10;
-    bool m_bShutdownFrontEndRequested;
-    bool m_bStartupFrontEndRequested;
+    int m_nPrefsRadarMode;
+    char m_bDisplayControllerOnFoot;
+    bool m_bShutDownFrontEndRequested;
+    bool m_bStartUpFrontEndRequested;
     char field_13;
-    int field_14;
-    int m_nBrightness;
-    float m_fDrawDistance;
-    bool m_bSubtitles;
-    bool m_bMapLegend;
-    bool m_bWidescreen;
-    char m_bTrailsOn;
-    char field_20;
-    bool m_bFrameLimiter;
-    char m_nAudioHardware;
-    char m_nAudio3DProviderIndex;
-    char field_28;
-    char m_nSfxVolume;
-    char m_nMusicVolume;
-    char m_nRadioStation;
-    char field_2C;
+    int m_nKeyPressedCode;
+    int m_nPrefsBrightness;
+    float m_fPrefsLOD;
+    bool m_bPrefsShowSubtitles;
+    bool m_bPrefsShowLegends;
+    bool m_bPrefsUseWideScreen;
+    bool m_bPrefsVsync;
+    bool m_bPrefsVsyncDisp;
+    bool m_bPrefsFrameLimiter;
+    char m_nPrefsAudio3DProviderIndex;
+    char m_nPrefsSpeakers;
+    bool m_bPrefsDMA;
+    char m_nPrefsSfxVolume;
+    char m_nPrefsMusicVolume;
+    char m_nPrefsRadioStation;
+    bool m_bPrefsStereoMono;
     char field_2D[3];
-    int m_nCurrentOption;
-    bool m_bQuitGame;
+    int m_nCurrentMenuEntry;
+    bool m_bQuitGameNoCD;
     bool m_bDrawRadarOrMap;
-    char field_36;
+    bool m_bAllowNavigation;
     bool m_bStreamingDone;
     bool m_bMenuActive;
-    bool m_bDemoQuit;
-    char field_3A;
-    bool m_bIsSaveDone;
-    bool m_bLoadingData;
+    bool m_bWantToRestart;
+    char m_bFirstTime;
+    bool m_bSaveMenuActive;
+    bool m_bWantToLoad;
     char field_3D[3];
     float m_fMapZoom;
     float m_fMapBaseX;
     float m_fMapBaseY;
-    int m_nLanguage;
-    int field_50;
+    int OS_Language;
+    int m_nPrefsLanguage;
     int field_54;
     bool m_bLanguageLoaded;
-    bool m_bAllowNastyGame;
-    bool m_bMp3BoostVolume;
+    bool m_bPrefsAllowNastyGame;
+    char m_nPrefsMP3BoostVolume;
     char m_nControlMethod;
-    int m_nAppliedResolution;
-    int m_nResolution;
+    int m_nPrefsVideoMode;
+    int m_nDisplayVideoMode;
     int m_nMouseTempPosX;
     int m_nMouseTempPosY;
-    bool m_bGameStarted;
+    bool m_bGameNotLoaded;
     char m_nPreviousAudioIndex;
     char m_bFrontEnd_ReloadObrTxtGxt;
     char field_6F;
@@ -222,8 +238,8 @@ public:
     int* pControlEdit;
     bool m_bOnlySaveMenu;
     char field_7D[3];
-    int field_80;
-    CSprite2d m_apMenuSprites[26];
+    int m_nMenuFadeAlpha2;
+    CSprite2d m_aMenuSprites[26];
     int m_bSpritesLoaded;
     int m_nRadioIconsLeftPosition;
     int m_nScrollRadioOffset;
@@ -267,7 +283,7 @@ public:
     bool field_158;
     bool field_159;
     char m_nCurrExLayer;
-    char m_PrefsSkinFile[256];
+    char m_nPrefsSkinFile[256];
     char m_aSkinName[256];
     char field_35B;
     int m_nHelperTextMsgId;
@@ -286,11 +302,20 @@ public:
     bool CheckHover(int x1, int x2, int y1, int y2);
     void DisplayHelperText(const char* text);
     void SwitchToNewScreen(int screen);
+    void RequestFrontEndStartUp();
+    void RequestFrontEndShutDown();
+    void SwitchMenuOnAndOff();
+    void CheckSliderMovement(char value);
+    void ChangeRadioStation(char value);
+    void Draw(int unk);
+    void UserInput();
+    void PrintMap();
+    void LoadSettings();
+    void SaveSettings();
 };
 
 
 VALIDATE_SIZE(CMenuManager, 0x684);
 
-extern CMenuManager &FrontEndMenuManager;
-extern unsigned int MAX_MENU_PAGES; // default 35
-extern CMenuScreen *gMenuPages; // tMenuPage gMenuPages[MAX_MENU_PAGES]
+extern CMenuManager& FrontEndMenuManager;
+extern CMenuScreen* aScreens; // [NUM_MENU_PAGES]

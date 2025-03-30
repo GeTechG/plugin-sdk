@@ -9,6 +9,10 @@
 #include "CSprite2d.h"
 #include "CPlayerSkin.h"
 
+enum {
+	NUM_ENTRIES = 18
+};
+
 enum eFrontendSprites {
 	FE2_MAINPANEL_UL,
 	FE2_MAINPANEL_UR,
@@ -69,7 +73,7 @@ enum eMenuScreen {
 	MENUPAGE_BRIEFS = 3,
 	MENUPAGE_CONTROLLER_SETTINGS = 4,
 	MENUPAGE_SOUND_SETTINGS = 5,
-	MENUPAGE_GRAPHICS_SETTINGS = 6,
+	MENUPAGE_DISPLAY_SETTINGS = 6,
 	MENUPAGE_LANGUAGE_SETTINGS = 7,
 	MENUPAGE_CHOOSE_LOAD_SLOT = 8,
 	MENUPAGE_CHOOSE_DELETE_SLOT = 9,
@@ -119,9 +123,10 @@ enum eMenuScreen {
 	MENUPAGE_CHOOSE_MODE = 53,
 	MENUPAGE_SKIN_SELECT = 54,
 	MENUPAGE_KEYBOARD_CONTROLS = 55,
-	MENUPAGE_MOUSE_CONTROLS = 56,
+	MENUPAGE_MOUSE_SETTINGS = 56,
 	MENUPAGE_57 = 57,
 	MENUPAGE_58 = 58,
+	NUM_MENU_PAGES
 };
 
 enum eMenuAction {
@@ -174,7 +179,7 @@ enum eMenuAction {
 	MENUACTION_PARSEHEAP,
 	MENUACTION_SHOWCULL,
 	MENUACTION_MEMCARDSAVECONFIRM,
-	MENUACTION_UPDATEMEMCARDSAVE,
+	MENUACTION_RESUME_FROM_SAVEZONE,
 	MENUACTION_UNK50,
 	MENUACTION_DEBUGSTREAM,
 	MENUACTION_MPMAP_LIBERTY,
@@ -241,49 +246,52 @@ enum eMenuAction {
 struct PLUGIN_API CMenuScreen {
 	char m_ScreenName[8];
 	int unk;
-	int m_nPreviousPage[2];
-	int m_nParentEntry[2];
+	int m_nPreviousPage;
+	int m_nPreviousGamePage;
+	int m_nParentEntry;
+	int m_nParentGameEntry;
 
 	struct PLUGIN_API CMenuEntry {
-		int m_Action;
+		int m_nAction;
 		char m_EntryName[8];
 		int m_nSaveSlot;
 		int m_nTargetMenu;
-	} m_aEntries[18];
+	} m_aEntries[NUM_ENTRIES];
 };
 
 class PLUGIN_API CMenuManager {
 public:
-	int m_nResolution;
-	int m_nAppliedResolution;
-	char m_nAudioHardware;
+	int m_nPrefsVideoMode;
+	int m_nDisplayVideoMode;
+	char m_nPrefsAudio3DProviderIndex;
 	bool m_bKeyChangeNotProcessed;
 	char m_aSkinName[256];
 	int m_nHelperTextMsgId;
 	bool m_bLanguageLoaded;
 	bool m_bMenuActive;
-	char field_112;
-	char field_113;
-	bool m_bStartGameLoading;
+	char m_bMenuStateChanged;
+	char m_bWaitingForNewKeyBind;
+	bool m_bWantToRestart;
 	bool m_bFirstTime;
 	bool m_bGameNotLoaded;
-	CVector2D m_vecMousePos;
+	int m_nMousePosX;
+	int m_nMousePosY;
 	int m_nMouseTempPosX;
 	int m_nMouseTempPosY;
 	bool m_bShowMouse;
 	CPlayerSkinData m_sSkin;
 	CPlayerSkinData *m_pSelectedSkin;
-	int field_438;
-	float field_43C;
+	int m_nFirstVisibleRowOnList;
+	float m_nScrollbarTopMargin;
 	int m_nCurrentExSize;
 	int m_nSkinsTotal;
 	char _unk0[4];
 	int m_nCurrentExOption;
-	bool m_bSkinsFound;
+	bool m_bSkinsEnumerated;
 	bool m_bQuitGameNoCD;
-	char field_452;
+	bool m_bRenderGameInMenu;
 	bool m_bSaveMenuActive;
-	bool m_bLoadingSavedGame;
+	bool m_bWantToLoad;
 	char field_455;
 	char field_456;
 	bool m_bSpritesLoaded;
@@ -296,7 +304,7 @@ public:
 	char field_522;
 	char field_523;
 	char field_524;
-	int m_CurrentControlAction;
+	int m_nCurrentControlAction;
 	char _unk1[4];
 	int field_530;
 	char field_534;
@@ -316,22 +324,22 @@ public:
 
 public:
 	static int &OS_Language;
-	static char &m_nPrefsUseVibration;
-	static char &m_nDisplayControllerOnFoot;
-	static char &m_nPrefsUseWideScreen;
+	static bool &m_bPrefsUseVibration;
+	static bool &m_bDisplayControllerOnFoot;
+	static bool &m_bPrefsUseWideScreen;
 	static char &m_nPrefsRadioStation;
-	static char &m_nPrefsVsync;
-	static char &m_nPrefsVsyncDisp;
-	static char &m_nPrefsFrameLimiter;
-	static char &m_nPrefsShowSubtitles;
+	static bool &m_bPrefsVsync;
+	static bool &m_bPrefsVsyncDisp;
+	static bool &m_bPrefsFrameLimiter;
+	static bool &m_bPrefsShowSubtitles;
 	static char &m_nPrefsSpeakers;
 	static char &m_nControlMethod;
-	static char &m_nPrefsDMA;
+	static bool &m_bPrefsDMA;
 	static char &m_nPrefsLanguage;
-	static char &m_bDisableMouseSteering;
+	static bool &m_bDisableMouseSteering;
 	static int &m_nPrefsBrightness;
 	static float &m_fPrefsLOD;
-	static char &m_bFrontEnd_ReloadObrTxtGxt;
+	static bool &m_bFrontEnd_ReloadObrTxtGxt;
 	static int &m_nPrefsMusicVolume;
 	static int &m_nPrefsSfxVolume;
 	static char *m_nPrefsSkinFile;
@@ -372,7 +380,7 @@ public:
 	void Process();
 	void ProcessButtonPresses();
 	void ProcessOnOffMenuOptions();
-	static void RequestFrontEndShutdown();
+	static void RequestFrontEndShutDown();
 	static void RequestFrontEndStartUp();
 	void ResetHelperText();
 	void SaveLoadFileError_SetUpErrorScreen();
@@ -389,3 +397,4 @@ public:
 VALIDATE_SIZE(CMenuManager, 0x564);
 
 extern CMenuManager &FrontEndMenuManager;
+extern CMenuScreen* aScreens;

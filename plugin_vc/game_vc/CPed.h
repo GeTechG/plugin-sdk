@@ -66,8 +66,8 @@ enum PLUGIN_API ePedState : unsigned int {
     PEDSTATE_GETUP = 43,
     PEDSTATE_JUMP_FROM_VEHICLE = 44,
     PEDSTATE_DRIVING = 50,
-    PEDSTATE_DEAD = 54,
-    PEDSTATE_WASTED = 55,
+    PEDSTATE_DIE = 54,
+    PEDSTATE_DEAD = 55,
     PEDSTATE_CAR_JACK = 56,
     PEDSTATE_ENTER_CAR = 58,
     PEDSTATE_EXIT_CAR = 60
@@ -634,6 +634,11 @@ public:
     static void* operator new(unsigned int size);
     static void* operator new(unsigned int size, int arg1);
     CPed(ePedType pedType);
+
+public:
+    inline CWeapon* GetWeapon() {
+        return &this->m_aWeapons[this->m_nCurrentWeapon];
+    }
 };
 
 VALIDATE_SIZE(CPed, 0x5F4);
