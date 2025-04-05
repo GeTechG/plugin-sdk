@@ -517,8 +517,19 @@ RwFastRealToUInt32Inline(RwReal x)
 {
     RwUInt32 res;
 
+#if defined(_MSC_VER) && !defined(__clang__)
     __asm FLD DWord Ptr[x];
+#else
+    // Non-MSVC or Clang implementation
+    float temp = x;
+    __asm__("fld %0" : : "m" (temp));
+#endif
+#if defined(_MSC_VER) && !defined(__clang__)
     __asm FISTP DWord Ptr[res];
+#else
+    // Non-MSVC or Clang implementation
+    __asm__("fistp %0" : "=m" (res));
+#endif
     
     return(res);
 }
